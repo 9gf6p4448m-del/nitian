@@ -1,4 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import DuelApp from './DuelApp'
 
-createRoot(document.getElementById('root')!).render(<App />)
+const legacy = new URLSearchParams(location.search).get('legacy') === '1'
+createRoot(document.getElementById('root')!).render(legacy ? <App /> : <DuelApp />)

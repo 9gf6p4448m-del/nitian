@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 
 async function start(page: Page, mode = '紙上試煉') {
-  await page.goto('./')
+  await page.goto('./?legacy=1')
   await page.getByRole('button', { name: mode, exact: false }).click()
   await page.getByRole('button', { name: '開始借招', exact: true }).click()
 }
@@ -134,7 +134,7 @@ test('無法使用localStorage仍可開始及操作，並顯示保存失敗', as
 })
 
 test('PWA安裝資源及離線重新載入', async ({ page, context }) => {
-  await page.goto('./')
+  await page.goto('./?legacy=1')
   const manifest = await page.request.get('manifest.webmanifest')
   expect(manifest.ok()).toBe(true)
   expect((await manifest.json()).display).toBe('standalone')
@@ -180,7 +180,7 @@ test('觸控手機可選牌、插槽及撤回，出手列在視窗內', async ({
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
   const page = await context.newPage()
   try {
-    await page.goto(process.env.TEST_URL || 'http://127.0.0.1:4173/nitian/')
+    await page.goto(`${process.env.TEST_URL || 'http://127.0.0.1:4173/nitian/'}?legacy=1`)
     await page.getByRole('button', { name: '紙上試煉', exact: false }).tap()
     await page.getByRole('button', { name: '開始借招', exact: true }).tap()
     await page.getByRole('button', { name: '手牌 引雷印', exact: false }).tap()
