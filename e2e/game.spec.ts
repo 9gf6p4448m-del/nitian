@@ -134,6 +134,8 @@ test('無法使用localStorage仍可開始及操作，並顯示保存失敗', as
 })
 
 test('PWA安裝資源及離線重新載入', async ({ page, context }) => {
+  page.on('pageerror', error => console.log('OFFLINE_PAGE_ERROR', error.message))
+  page.on('requestfailed', req => console.log('OFFLINE_REQUEST_FAILED', req.url(), req.failure()?.errorText))
   await page.goto('./')
   const manifest = await page.request.get('manifest.webmanifest')
   expect(manifest.ok()).toBe(true)
@@ -142,10 +144,44 @@ test('PWA安裝資源及離線重新載入', async ({ page, context }) => {
     await navigator.serviceWorker.ready
     if (!navigator.serviceWorker.controller) await new Promise<void>(resolve => navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true }))
   })
+  const sw = context.serviceWorkers()[0]
   await context.setOffline(true)
+  console.log('OFFLINE_CACHE', JSON.stringify(await page.evaluate(async () => {
+    return await Promise.all((await caches.keys()).map(async k => {
+      const c = await caches.open(k)
+      return { k, files: await Promise.all((await c.keys()).filter(r => r.url.endsWith('.js')).map(async req => ({ url: req.url, request: [...req.headers], headers: [...(await c.match(req))!.headers], empty: !!await c.match(new Request(req.url)), origin: !!await c.match(new Request(req.url, { headers: { Origin: location.origin } })) }))) }
+    }))
+  })))
   await page.reload()
+  console.log('OFFLINE_HTML', await page.content())
+  console.log('OFFLINE_SW', JSON.stringify(await sw.evaluate('self.__diag')))
   await expect(page.getByRole('button', { name: '開始借招', exact: true })).toBeVisible()
   await page.getByRole('button', { name: '開始借招', exact: true }).click()
   await expect(page.getByTestId('round')).toHaveText('1')
   await context.setOffline(false)
+})
+
+test('演出期間品牌入口不繞過出手鎖定', async ({ page }) => {
+  await start(page)
+  await page.getByRole('button', { name: '出手', exact: true }).click()
+  await page.getByRole('link', { name: '逆天首頁' }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await page.getByRole('button', { name: '略過演出' }).click()
+  await expect(page.getByRole('button', { name: '下一回合', exact: true })).toBeVisible()
+})
+
+test('教學演出結束不覆蓋剛修改的音效設定', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-10-23T00:00:00Z') })
+  await page.clock.pauseAt(new Date('2026-10-23T00:00:01Z'))
+  await start(page)
+  await page.getByRole('button', { name: '出手', exact: true }).click()
+  for (let i = 0; i < 12; i++) {
+    if (await page.locator('.action-dock strong').textContent() === '回合結束') break
+    await page.clock.runFor(350)
+  }
+  await expect(page.locator('.action-dock strong')).toHaveText('回合結束')
+  await page.getByRole('button', { name: '設定', exact: true }).click()
+  await page.getByLabel('合成音效').check()
+  await page.clock.runFor(350)
+  await expect(page.getByLabel('合成音效')).toBeChecked()
 })

@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "逆天｜借天之力，逆天而行",
+  "short_name": "逆天",
+  "description": "把招式插入天神的行動，借走雷霆，再親手奉還。單場卡牌試煉。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#101b23",
+  "theme_color": "#121c24",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

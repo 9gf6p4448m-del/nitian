@@ -139,6 +139,11 @@ describe('即時資源、護盾與倒刺', () => {
 })
 
 describe('純函式、編排與跨回合', () => {
+  it('倒刺消耗包含在事件內，逐事件快照連續', () => {
+    const s = fixture(['guard', 'thorns'], { round: 2 })
+    const r = resolveTurn(s, plan(s, [['guard', 0], ['thorns', 0]]))
+    for (let i = 1; i < r.events.length; i++) expect(r.events[i].before).toEqual(r.events[i - 1].after)
+  })
   it('預覽／正式解析一致，原狀態與RNG完全不變', () => {
     const s = createGame({ seed: 'immutable', mode: 'standard', tutorial: true })
     const p = plan(s, [['draw_thunder', 1], ['guard', 1], ['return', 2]])
