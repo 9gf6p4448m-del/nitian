@@ -6,7 +6,7 @@
 
 以 390×844／touch 與 1366×768 操作真實 UI。使用網址的公開 `seed`／`scenario`／`opponent`、新局表單與實際按鈕；不向頁面注入局面。Node 引擎只產生預期序列，每次預覽必須保持 serial 不變，確認後逐步比對 serial、回合、位置及 AP，終局下載 JSON 與整份預期狀態比對。
 
-自動化並非實體 iPhone、Safari 安裝成功證明，亦非真人已確認好玩或平衡。公開網址與來源提交核對仍須部署後另跑，不能由本機結果推論。
+自動化並非實體 iPhone、Safari 安裝成功證明，亦非真人已確認好玩或平衡。公開網址與來源提交核對的實測結果見最後一節，與本機結果分開記錄。
 
 ## 首輪失敗與處置
 
@@ -51,4 +51,22 @@
 
 ## 公開網址驗證
 
-尚未部署後驗證。收到公開網址與來源提交後，各單輪跑 `@live` Chrome／WebKit；公開截圖以 `-live.png` 結尾，避免覆蓋本機證據。
+公開入口：`https://9gf6p4448m-del.github.io/nitian/?mode=tactics`。執行前以 `Invoke-WebRequest` 實讀 `https://9gf6p4448m-del.github.io/nitian/version.json`，HTTP Date `Fri, 23 Oct 2026 15:50:24 GMT`、Last-Modified `Fri, 23 Oct 2026 15:49:39 GMT`，內容為：
+
+```json
+{"version":"nitian-s0-43f59c23fad1","commit":"67e5d60848e88fc06d9a2075a11f9770b531c73e","builtAt":"2026-10-23T15:48:17.428Z"}
+```
+
+來源提交與要求的凍結提交相同才啟動瀏覽器。公開截圖以 `-live.png` 結尾，保留本機證據。
+
+`$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; $env:PLAYWRIGHT_HTML_OUTPUT_DIR='playwright-report/tactics-chrome-live'; npx playwright test e2e/tactics.spec.ts --grep '@live' --output=test-results/tactics-chrome-live`：`22 passed (1.9m)`，單輪無 skip、無 retry。HTML 報告：`playwright-report/tactics-chrome-live/index.html`。
+
+`$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; npx playwright test --config=playwright.tactics-webkit.config.ts --grep '@live' --output=test-results/tactics-webkit-live`：`22 passed (3.4m)`，單輪無 skip、無 retry。HTML 報告：`playwright-report/tactics-webkit/index.html`。
+
+公開兩套均通過390×844 touch與1366×768、素材解碼與44px觸控目標、六卡、傷害3／血誓傷害5、取消／防雙發、同機遮牌與Tab、AI暫停／換局清舊timer、30手完整八輪／JSON／重開、儲存失效、斷網重載含兩atlas與新manifest、既有入口smoke。沒有再執行舊73案。
+
+公開首張 Chrome 桌面預覽截圖拍到PNG解碼過程、角色只出現上方細條，保留為 `screenshots/tactics-desktop-chromium-attack-preview-live-first-capture.png`。後續素材案例以 `Image.decode()` 驗證成功，確認不是遺漏檔案。補拍以獨立 Playwright CLI（`node --input-type=module`）從公開入口重新選「攻擊」與D3，在兩張CSS背景atlas完成decode並經下一個animation frame後拍預覽，再確認攻擊、等待結算完成後拍lesson；不改凍結source或跳過案例。實際輸出四組均為 `decoded 2 atlases; damage3 preview and committed lesson screenshots saved`（chromium／webkit × phone／desktop）。已實看補拍桌面圖及公開WebKit手機首屏，素材完整、傷害來源與確認列可辨。
+
+測試完成後於 HTTP Date `Fri, 23 Oct 2026 15:55:14 GMT` 再讀 `version.json`，仍為相同 `67e5d60848e88fc06d9a2075a11f9770b531c73e`、`nitian-s0-43f59c23fad1` 與建置時間，未混入另一部署版本。檢查本代理的4174已無listener；未操作主線4183。
+
+公開證據共有20張主要 `*-live.png` 加1張首次捕捉圖；本機圖仍保留。既有使用者若持續看到舊版，可連網重新載入並點「有新版，立即更新」；更新會重開目前對局，介面會先確認。以上仍不等於實體iPhone或真人已確認有趣。

@@ -1,6 +1,6 @@
 # 神壇交鋒0.5・驗證與送達
 
-基準 `c6b6ca155057b84d85f55f8895899804b4071db0`，可退回分支 `checkpoint/realm-0.4-c6b6ca1`。舊模式與驗收保留。此紀錄目前持續補入實測輸出；公開版本未完成核對前不宣稱已送達。
+基準 `c6b6ca155057b84d85f55f8895899804b4071db0`，可退回分支 `checkpoint/realm-0.4-c6b6ca1`。舊模式與驗收保留。公開來源及Pages版本已核對，下方分別記錄規則、瀏覽器及送達證據。
 
 ## 規則、建置與獨立審查
 
@@ -8,7 +8,7 @@
 
 `npm run lint:fire`、`npm run lint:realm`、`npx eslint src/TacticsApp.tsx src/tactics --max-warnings 0`、`npx tsc --noEmit -p tsconfig.json`均exit0。`npx eslint . --ext .ts,.tsx,.js,.jsx`為0 errors、3個coverage生成JS的unused-disable warnings；不修改無關產物消警告。ESLint新增全TS parser，既有React hooks檢查範圍未縮小。
 
-`npm run build`：TypeScript與Vite成功，45 modules transformed；新增獨立manifest與兩張atlas後Service Worker precache 13 URLs。最後來源提交、時間與公開metadata於送達階段記入下方。
+`npm run build`：TypeScript與Vite成功，45 modules transformed，built in 200ms；JS398.61kB／gzip125.99kB、CSS84.70kB／gzip18.82kB。新增獨立manifest與兩張atlas後Service Worker precache 13 URLs。無新增依賴，package僅更新至0.5.0。
 
 獨立TypeScript審查另跑300局隨機合法完整局、9152次行動、80次隱藏資訊替換比較，violations=0。另驗證出生格被占且普通空格被雷泉填滿時仍可在可站祭壇重生，HP6、下回合AP1、不會卡死。不是AI最佳性或真人平衡證明。
 
@@ -32,7 +32,21 @@
 
 ## 送達狀態
 
-待部署完成後記錄來源commit、gh-pages commit、version.json、GitHub Pages建置時間及公開網址Chrome／WebKit輸出。尚未由本段證明送達。
+`git push origin main`成功，來源為`67e5d60848e88fc06d9a2075a11f9770b531c73e`，時間2026-10-23T23:47:40+08:00。提交後重新build，再以`npm run deploy:pages`發布，實際輸出`Published`。
+
+`git fetch origin gh-pages`後，`git log origin/gh-pages -1`為`627709dda84ef584ed06d996feb1f015cc70bf24`，2026-10-23T23:48:58+08:00。
+
+`gh api repos/9gf6p4448m-del/nitian/pages/builds/latest`：status=built，commit同上述gh-pages；created_at=2026-10-23T15:49:10Z，updated_at=2026-10-23T15:49:41Z，即台灣2026-10-23 23:49:41完成。
+
+公開`https://9gf6p4448m-del.github.io/nitian/version.json`回傳HTTP200，內容：version=`nitian-s0-43f59c23fad1`、commit=`67e5d60848e88fc06d9a2075a11f9770b531c73e`、builtAt=`2026-10-23T15:48:17.428Z`；Last-Modified=`Fri, 23 Oct 2026 15:49:39 GMT`。來源提交與公開產物一致，不以本機畫面代替送達。
+
+公開網址設定`$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'`後，Chrome另設`$env:PLAYWRIGHT_HTML_OUTPUT_DIR='playwright-report/tactics-chrome-live'`；`npx playwright test e2e/tactics.spec.ts --grep '@live' --output=test-results/tactics-chrome-live`為22 passed (1.9m)；`npx playwright test --config=playwright.tactics-webkit.config.ts --grep '@live' --output=test-results/tactics-webkit-live`為22 passed (3.4m)。兩套均單輪，無skip／retry，包含完整八輪終局、實際出牌／攻擊／占壇、重開、專用manifest、離線及舊入口smoke。
+
+公開截圖20張`docs/screenshots/tactics-*-live.png`；另保留首張桌面PNG解碼中截圖`...-first-capture.png`，不把它當完整畫面。補拍先等兩張圖集完整解碼，再從真實UI選攻擊D3，確認傷害3；手機首屏／終局與桌面預覽均已實看。HTML／詳細命令與首輪證據見`docs/tactics-browser-report.md`。
+
+最後公開metadata核對時間2026-10-23T15:55:14Z，來源與版本仍相同。後續只有驗證文件與截圖提交，不改已部署程式。
+
+新玩法從`?mode=tactics`使用獨立PWA manifest；舊共享神域捷徑保留原用途。請從新版網址在Safari分享→加入主畫面，首次連網後可離線。有「有新版，立即更新」時可更新；會重新開始本局。若仍舊畫面，連網關閉該網站分頁再重開。清除網站資料會刪本機紀錄。
 
 ## 限制與真人試玩
 
