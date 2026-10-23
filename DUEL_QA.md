@@ -16,7 +16,20 @@
 
 ## 送達
 
-此段於正式部署後補入實際來源提交、Pages提交時間、version.json與正式站26項實跑結果。補入前不宣稱送達驗證完成。
+- 程式來源提交：`40c390337334c5515d5c1002be9be477835adb1e`，2026-10-23 14:25:33 +08:00。後續提交只更新本QA與正式站截圖，不改程式；因此main可能比線上來源多一筆文件提交。
+- `npm.cmd run deploy:pages` → `Published`，exit0。
+- `git log origin/gh-pages -1 --format='%H %cI %s'` → `97e9e0d4050347186da98d60e929268f8dc171ad 2026-10-23T14:26:03+08:00 Updates`。
+- `gh api repos/9gf6p4448m-del/nitian/pages/builds/latest` → `status: built`、`commit: 97e9e0d4050347186da98d60e929268f8dc171ad`、`updated_at: 2026-10-23T06:26:36Z`（台灣14:26:36）、`error: null`。
+- 線上 [version.json](https://9gf6p4448m-del.github.io/nitian/version.json) 與本機dist一致：`version: nitian-s0-15897c2737a2`、`commit: 40c390337334c5515d5c1002be9be477835adb1e`、`builtAt: 2026-10-23T06:25:46.846Z`。
+- 正式站命令：`$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; npm.cmd run test:e2e` → **26 passed (1.8m)**、exit0。驗的是已發布版本，包含新15項、原版11項、離線重載與完整勝敗。
+- 正式站實際截圖：[手機390×844](docs/screenshots/duel-mobile.png)／[桌面1366×768](docs/screenshots/duel-desktop.png)。共同軌道六張完整內容可獨立捲動；截圖為fullPage，固定操作列仍以視窗定位。
+- 手機PWA更新：連線重開本站，看到「新版本已備妥」選「更新並重開」。新版首頁為「一招落定，天命未定」，頁尾建置時間為2026-10-23 06:25 UTC（台灣14:25）；舊版比較網址 `?legacy=1`。清除網站資料會刪除本機紀錄，優先使用頁內更新。
+
+## 變更與範圍核對
+
+`git show --stat 40c3903`：18 files changed、1350 insertions、13 deletions。規則主體 `src/game/duel.ts:9`；共用新模式解析器`:86`，有限AI`:218`。介面 `src/DuelApp.tsx:47`、新樣式 `src/duel.css:1`、紀錄 `src/duel-storage.ts:32`；`src/main.tsx:5`切換模式，原版`src/App.tsx:192`只增加返回新版入口。原engine/data/types/rng、舊storage及原卡數值皆未改。
+
+判準檔逐項：新增 `DUEL_ACCEPTANCE.md`、`src/game/duel.test.ts`、`src/duel-storage.test.ts`、`e2e/duel.spec.ts`；`e2e/game.spec.ts`僅3處網址加legacy=1；`vite.config.ts:11`只擴大coverage include至新版storage，四項80%不變。未刪除或放寬舊驗算、案例預期或測試門檻。規格／啟動／更新方式見 `DUEL_SPEC.md`、`README.md`；`S0_SPEC.md`僅加原版標示。
 
 ## 限制
 
