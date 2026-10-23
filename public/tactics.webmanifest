@@ -1,0 +1,17 @@
+{
+  "id": "./?mode=tactics",
+  "name": "逆天｜神壇交鋒",
+  "short_name": "逆天交鋒",
+  "description": "阿修羅神話戰棋：方向交戰、抽牌換裝、共用神力與四壇爭奪。",
+  "lang": "zh-Hant",
+  "start_url": "./?mode=tactics",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#10171e",
+  "theme_color": "#10171e",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
