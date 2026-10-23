@@ -1,4 +1,20 @@
-# 逆天 NITIAN · 神壇交鋒 0.5
+# 逆天 NITIAN · 奪勢 0.6
+
+**奪勢手機試玩：https://9gf6p4448m-del.github.io/nitian/?mode=clash&scenario=full**
+
+這是針對「行動重複、局勢難讀」的候選原型：一手一張牌，出將/置泉/變陣直接引發交鋒；六輪爭A2與D3祭壇，每輪以周圍兵數決定得分。沒有獨立走路或普通攻擊按鈕。棋子不會自動反擊。
+
+- 首次建議先開[兩輪固定試局](https://9gf6p4448m-del.github.io/nitian/?mode=clash&scenario=study)，點「雷泉→B2→右→確認」，看B3修槍借泉擊殺C3，再看天方回應；AI不保證採用紙上示例回應。
+- [四種牌與完整規則](CLASH_SPEC.md)／[凍結驗收](CLASH_ACCEPTANCE.md)／[兩輪分支推演與較差答案](CLASH_PAPER.md)／[實測與送達](CLASH_QA.md)。
+- 開「新局」可選同機輪流/天眾AI、兩輪/六輪、種子與減少動態。每輪先手交換，畫面明示輪末與次輪誰先出手。
+- 點牌→亮格→方向→預覽→確認；雷泉需選相鄰友軍，變陣先選友軍。取消不消耗牌；棄牌整備用掉一手。
+- 新模式有獨立PWA身份。Safari開上方網址→分享→加入主畫面；既有0.4/0.5捷徑保留舊入口。首次連網快取後可離線重開，不恢復未完成局。看到新版提示可「更新並重開」，會放棄當局。
+- 已結束局最多保留20場與主觀回饋；JSON終局含完整紀錄，中途下載使用本方公開視圖，不提供敵手牌/未來牌序。全程單機，沒有網路多人或保密伺服器；瀏覽器內部診斷狀態可由開發工具檢視，不能視為防作弊環境。
+- 本輪不遷移Unity、不把Blender大檔接入PWA、不新增角色/大量卡牌。程式與瀏覽器正確性不代表真人已覺得有趣或平衡。
+
+啟動/驗證：`npm install`、`npm run dev`；`npm run test:coverage`、`node scripts/check-clash-paper.mjs`、`npm run build`、`npx playwright test e2e/clash.spec.ts --reporter=list`、`npx playwright test --config playwright.clash-webkit.config.ts --reporter=list`。部署沿用下方的GitHub Pages程序。
+
+## 神壇交鋒 0.5（保留對照）
 
 **新版手機試玩：https://9gf6p4448m-del.github.io/nitian/?mode=tactics&scenario=full**
 

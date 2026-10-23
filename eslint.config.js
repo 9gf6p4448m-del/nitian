@@ -7,7 +7,7 @@ export default [{
   files: ['**/*.ts', '**/*.tsx'],
   languageOptions: { parser: tsParser, parserOptions: { ecmaFeatures: { jsx: true } } },
 }, {
-  files: ['src/FireApp.tsx', 'src/RealmApp.tsx', 'src/TacticsApp.tsx', 'src/fire/**/*.tsx', 'src/pwa.ts'],
+  files: ['src/FireApp.tsx', 'src/RealmApp.tsx', 'src/TacticsApp.tsx', 'src/ClashApp.tsx', 'src/fire/**/*.tsx', 'src/pwa.ts'],
   languageOptions: {
     parser: tsParser,
     ecmaVersion: 'latest',
