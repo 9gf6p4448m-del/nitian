@@ -10,6 +10,8 @@
 
 重跑方式是 README 18–27 行的全新 `--background --factory-startup` 程序；draft 與 final 都會覆寫同名 blend／GLB，README 已明說必須先 draft、再 final、最後 inspect。本 reviewer 未重新執行生成器，避免覆寫交付物；下面的獨立檢查均不呼叫生成器，也不寫回模型。
 
+另位 Python reviewer 回報、且已由本 reviewer 讀回 README 末段的兩項限制：同一個 Blender 程序連續生成時，活用場景的幾何數相同，但未使用的舊 mesh／材質資料會留存；格式掃描有 39 個 E501 長行與 1 個 I001 匯入排序警告、沒有 F 類錯誤。前者依文件要求每次啟動新程序可避開，後者本輪保留未整理。本紀錄列出這兩項已揭露限制，不把它們誤記成「格式全綠」或「支援長駐程序重複執行」。
+
 ## 2. 獨立重開 blend
 
 實際指令（PowerShell；`--disable-autoexec` 防止場景內自動腳本執行）：
