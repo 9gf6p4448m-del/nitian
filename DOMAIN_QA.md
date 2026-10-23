@@ -29,10 +29,11 @@
 | `npx playwright test e2e/domains.spec.ts --reporter=list --output=test-results/domains-chrome`（首輪） | `4 failed, 5 passed (1.3m)`，exit1 | 未驗證：A1測試期望誤寫；確認列缺總分前後箭頭；總分制缺控制區計數（影響2項），待補正重跑 |
 | `npx playwright test --reporter=list --output=test-results/domains-full-regression`（修正後） | `73 passed (4.7m)`，exit0 | 本機Chrome新9項與舊64項完整回歸通過；無跳過 |
 | `npx playwright test --config playwright.domains-webkit.config.ts --reporter=list --output=test-results/domains-webkit` | `5 passed (1.1m)`，exit0 | 本機iPhone WebKit核心通過；含touch及離線兩制 |
-| 公開Chrome／WebKit | 待部署後實跑 | 未驗證 |
+| `$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; npx playwright test e2e/domains.spec.ts --grep '@live' --reporter=list --output=test-results/domains-public-chrome` | `5 passed (36.3s)`，exit0 | 公開Chrome通過 |
+| `$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; npx playwright test --config playwright.domains-webkit.config.ts --reporter=list --output=test-results/domains-public-webkit` | `5 passed (1.1m)`，exit0 | 公開iPhone WebKit通過 |
 | `npm run test:coverage` | 12 files、161 tests passed；statements98.31%、branches94.59%、functions99.52%、lines99.59% | 通過；原四項80%門檻不變 |
 | `npm run lint:fire`、`npm run lint:realm` | exit0、無警告 | 通過 |
-| `npm run build` | TypeScript/Vite成功、39modules；JS366.32kB/gzip115.87kB | 通過；無新依賴 |
+| `npm run build` | TypeScript/Vite成功、39modules；發布JS366.32kB/gzip115.86kB | 通過；無新依賴 |
 | fresh React／TypeScript／規則審查 | APPROVE，無HIGH/CRITICAL；兩項MEDIUM已修並實測GREEN-RED-GREEN | 通過，見下 |
 
 ## 驗算修正與獨立核對
@@ -49,7 +50,16 @@ Fresh審查以記憶體載入本版與基準d049f34的真實引擎，獨立核�
 
 ## 送達證據
 
-尚待來源SHA、Pages提交時間、部署輸出、公開version.json與公開Chrome／WebKit核心實跑結果。未取得前不宣稱已送達。
+- 爭域網址：https://9gf6p4448m-del.github.io/nitian/?mode=realm&victory=domains
+- 總分網址：https://9gf6p4448m-del.github.io/nitian/?mode=realm&victory=power
+- 功能提交61935b2d42d9f1257b90be380103759d1d77eb05；發布來源3ee60a8138426d445e5dd4c299f4243ef435e12b（2026-10-23 22:13:17+08:00，僅補文件EOF格式，runtime同61935b2）。`git push origin HEAD:main`：d049f34..3ee60a8。
+- `npm run deploy:pages`實際輸出`Published`。`git log origin/gh-pages -1`為271b52f50c1053cb1bfe7185a36bd13497ae167e，時間2026-10-23 22:13:43+08:00。
+- `gh api repos/9gf6p4448m-del/nitian/pages/builds/latest`：status=built、commit=271b52f...、updated_at=2026-10-23T14:14:35Z（台灣22:14:35）。
+- 公開version.json實讀：version=nitian-s0-08a0f46b0fb4、commit=3ee60a8138426d445e5dd4c299f4243ef435e12b、builtAt=2026-10-23T14:13:22.860Z，與dist相符。cache前綴沿用既有產生器，遊戲版本0.4。
+- 公開Chrome/WebKit各5項通過，含真touch/預覽取消/雙擊、跨區多源、同腳本兩制贏家相反/JSON/切換、兩制AI及後手、離線reload與兩制下棋。另兩瀏覽器直接開victory=power網址，教學=總分制、state.victory=power、ply=0，exit0；不是只檢查HTTP首頁。
+- 來源提交後僅補本QA、docs/domain-delivery.json與22張公開截圖，無runtime變更；文件提交不需要重部署，也不冒稱為線上來源SHA。
+- 若既有PWA仍是0.3，直接開上述新連結，或按「有新版，立即更新」（會重開本局）。新安裝可Safari分享→加入主畫面，未在實體手機安裝驗證。
+- 機器可讀證據：[domain-delivery.json](docs/domain-delivery.json)。
 
 ## 截圖
 
@@ -58,6 +68,8 @@ Fresh審查以記憶體載入本版與基準d049f34的真實引擎，獨立核�
 已實際檢視Chrome跨區預覽viewport、總分制對照完整頁、320窄手機viewport及12手平手完整頁；WebKit另檢視跨區預覽viewport。四區卡依西北／東北／西南／東南排列，中線清楚且供應光流跨區不中斷。C2大壇顯示10，來源列為6+4；固定確認列顯示控制區修2→3／天1→0與神力修5→15／天6→6，確認與取消完整可見。總分制頁明示區數僅供對照、總神力決勝，13：12與區數1：2可同時核對。WebKit圖檔使用裝置像素比例3，像素寬度高於CSS390px。
 
 全Chrome回歸重拍的既有realm／fire／battle／duel／clarity截圖已由整合端還原，以保留既有交付證據；新功能證據只保留domain前綴。
+
+公開另有22張live圖（核心20張＋直接總分URL2張），總domain圖48張。已檢視公開爭域結果、WebKit跨區預覽，頁腳0.4／22:13:22，總分13:12但控制1:2而天眾獲勝；跨區光流及固定預覽前後數字清楚。WebKit正常出現更新提示，後續AI及離線仍通過。
 
 ## 限制
 

@@ -1,0 +1,31 @@
+{
+  "domainsUrl": "https://9gf6p4448m-del.github.io/nitian/?mode=realm&victory=domains",
+  "powerUrl": "https://9gf6p4448m-del.github.io/nitian/?mode=realm&victory=power",
+  "sourceCommit": "3ee60a8138426d445e5dd4c299f4243ef435e12b",
+  "pagesCommit": "271b52f50c1053cb1bfe7185a36bd13497ae167e",
+  "pagesStatus": "built",
+  "pagesUpdatedAt": "2026-10-23T14:14:35Z",
+  "liveVersion": {
+    "version": "nitian-s0-08a0f46b0fb4",
+    "commit": "3ee60a8138426d445e5dd4c299f4243ef435e12b",
+    "builtAt": "2026-10-23T14:13:22.860Z"
+  },
+  "localVerification": {
+    "unitTests": 161,
+    "chromeRegressionTests": 73,
+    "webkitCoreTests": 5,
+    "lint": "passed",
+    "build": "passed",
+    "coveragePercent": { "statements": 98.31, "branches": 94.59, "functions": 99.52, "lines": 99.59 }
+  },
+  "publicVerification": {
+    "chromeCoreTests": 5,
+    "chromeOutput": "5 passed (36.3s)",
+    "webkitCoreTests": 5,
+    "webkitOutput": "5 passed (1.1m)",
+    "explicitPowerUrl": "passed in Chrome and WebKit",
+    "offlineBothRules": "passed in Chrome and WebKit",
+    "liveScreenshots": 22
+  },
+  "limits": ["No physical phone installation test", "No human fun or balance validation", "No unfinished match restoration"]
+}
