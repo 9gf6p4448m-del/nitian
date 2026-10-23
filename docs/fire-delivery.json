@@ -1,0 +1,20 @@
+{
+  "url": "https://9gf6p4448m-del.github.io/nitian/?mode=fire",
+  "checkedAtUtc": "2026-10-23T12:11:08.1280453+00:00",
+  "sourceCommit": "ef3c263b761249e615d61ce6922d13e804820c21",
+  "cacheVersion": "nitian-s0-e07905d7cd6b",
+  "builtAtUtc": "2026-10-23T12:05:56.391Z",
+  "pagesCommit": "2f74dcc7a141a1d5cb2f09b3daef1b90bf7add81",
+  "pagesStatus": "built",
+  "pagesUpdatedAtUtc": "2026-10-23T12:07:28Z",
+  "chromeLiveSmoke": {
+    "passed": 5,
+    "failed": 0
+  },
+  "webkitLiveSmoke": {
+    "passed": 5,
+    "failed": 0
+  },
+  "physicalPhoneInstallationTested": false,
+  "independentHumanFunTested": false
+}

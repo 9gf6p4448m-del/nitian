@@ -65,10 +65,20 @@ AI測試的8局自走218步全部終局，6殲滅/2奉獻；這可能反映暫�
 
 - [Chrome手機](docs/screenshots/fire-mobile.png)、[Chrome桌面](docs/screenshots/fire-desktop.png)
 - [WebKit手機](docs/screenshots/fire-mobile-webkit.png)、[WebKit桌面](docs/screenshots/fire-desktop-webkit.png)
+- 線上發布版：[Chrome手機](docs/screenshots/fire-mobile-live.png)、[Chrome桌面](docs/screenshots/fire-desktop-live.png)、[WebKit手機](docs/screenshots/fire-mobile-webkit-live.png)、[WebKit桌面](docs/screenshots/fire-desktop-webkit-live.png)。
 
 ## 發布與真人試玩
 
-既有位置：https://9gf6p4448m-del.github.io/nitian/?mode=fire 。發布後核對 `version.json` 的來源commit/建置UTC、`origin/gh-pages`的commit/時間與Pages build狀態，再對線上網址做同一組smoke測試。送達實測於本輪發布後補記。
+既有位置：https://9gf6p4448m-del.github.io/nitian/?mode=fire 。以下送達已實測，原始回讀另存 [fire-delivery.json](docs/fire-delivery.json)：
+
+- 來源與遠端main程式提交：`ef3c263b761249e615d61ce6922d13e804820c21`。
+- `npm run deploy:pages` 實際輸出 `Published`；`origin/gh-pages`為`2f74dcc7a141a1d5cb2f09b3daef1b90bf7add81`，提交時間`2026-10-23T20:06:50+08:00`。
+- Pages API狀態`built`，完成更新`2026-10-23T12:07:28Z`（台灣20:07:28），沒有build錯誤。
+- 線上`version.json`：`nitian-s0-e07905d7cd6b`、source同上、builtAt `2026-10-23T12:05:56.391Z`。
+- 對公開網址（不是本機）跑Chrome smoke：`5 passed (14.9s)`；WebKit：`5 passed (27.0s)`。兩者包含觸控、手機預覽/確認/AI、新局/玩法、桌面、PWA斷網重開。
+- 上述測試透過本程序環境變數`TEST_URL=https://9gf6p4448m-del.github.io/nitian/`，命令為`npx playwright test e2e/fire.spec.ts e2e/fire-touch.spec.ts --grep '@live' --reporter=list --output=test-results/fire-live`及`npx playwright test --config=playwright.fire-webkit.config.ts --output=test-results/fire-webkit-live`。
+
+發布後的QA/截圖補記只改文件，沒有改動上述已部署程式；因此線上source仍是程式提交ef3c263。
 
 尚未用使用者的實體手機安裝，也沒有獨立真人反覆A/B對局。首次需連線載完快取；若頁內提示新版本，確認更新後重開。更新會捨棄未完局，保存的完成紀錄保留。
 

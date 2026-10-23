@@ -23,7 +23,7 @@ AI為有限兩層搜尋及評分，沒有全局最優保證。原型可運作與
 單場玩法驗證原型，繁體中文、2D 原創 SVG。程式及自動化測試可驗證結算，
 不能證明真人覺得好玩。尚無獎勵、遺物、三場構築或帝釋天 Boss。
 
-- 試玩：https://9gf6p4448m-del.github.io/nitian/
+- 舊版輪流插牌試玩：https://9gf6p4448m-del.github.io/nitian/
 - 原始碼：https://github.com/9gf6p4448m-del/nitian
 - 新版範圍與驗收：[DUEL_ACCEPTANCE.md](DUEL_ACCEPTANCE.md)
 - 新版規格：[DUEL_SPEC.md](DUEL_SPEC.md)
