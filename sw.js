@@ -1,6 +1,6 @@
-const CACHE = "nitian-s0-e07905d7cd6b";
+const CACHE = "nitian-s0-0b30f04a1e35";
 const BASE = "/nitian/";
-const FILES = ["/nitian/assets/index-BUPc8fT8.js","/nitian/assets/index-CdVmKXzG.css","/nitian/icon.svg","/nitian/icons/apple-touch-icon.png","/nitian/icons/icon-192.png","/nitian/icons/icon-512.png","/nitian/index.html","/nitian/manifest.webmanifest","/nitian/version.json","/nitian/"];
+const FILES = ["/nitian/assets/index-BveVwp-0.css","/nitian/assets/index-CmgY98wu.js","/nitian/icon.svg","/nitian/icons/apple-touch-icon.png","/nitian/icons/icon-192.png","/nitian/icons/icon-512.png","/nitian/index.html","/nitian/manifest.webmanifest","/nitian/version.json","/nitian/"];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES))));
 self.addEventListener('message', event => { if (event.data === 'SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('activate', event => event.waitUntil(Promise.all([
