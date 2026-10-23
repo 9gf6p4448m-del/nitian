@@ -1,12 +1,14 @@
-# 逆天 NITIAN · 共享神域 0.3
+# 逆天 NITIAN · 共享神域 0.4
 
 新版手機試玩：**https://9gf6p4448m-del.github.io/nitian/?mode=realm**
 
 4×4共用神域，雙方輪流建立神壇、引入橫/縱神力，或犧牲己方壇轉向一股神力。
-完整局雙方各六步，最後當前神力較高者勝。普通壇一倍、大壇兩倍，多股供應相加；不是逐回合累積分數。
-先選行動、點棋盤，看預覽後確認。「查看供應」能查看每股來源；「新局」可切四手試局、同機雙人、陣營及先手。
+0.4預設爭域制：四個2×2區各自比較神壇收益，較高者控制、同分無主；最後先比控制區數，相同才比總神力，再相同平手。完整局仍每方六步、配件/行動不變。
+「新局→勝利規則」或「切換總分制重開」可比較原規則。原總分制直達：https://9gf6p4448m-del.github.io/nitian/?mode=realm&victory=power
+普通壇一倍、大壇兩倍，多股供應相加；不是逐回合累積。神力能跨區，收益歸受益神壇所在區。四域圖在兩制均顯示，總分制的區數僅供對照。
+先選行動、點棋盤，看預覽後確認。「查看供應」查每股來源；「新局」可切四手試局、同機雙人、陣營及先手。
 
-- [規則](REALM_SPEC.md)／[驗收](REALM_ACCEPTANCE.md)／[驗證與送達](REALM_QA.md)。
+- 0.4爭域：[規則](DOMAIN_SPEC.md)／[驗收](DOMAIN_ACCEPTANCE.md)／[驗證與送達](DOMAIN_QA.md)。0.3原總分制：[規則](REALM_SPEC.md)／[驗收](REALM_ACCEPTANCE.md)／[歷史驗證](REALM_QA.md)。
 - 新PWA預設從共享神域啟動；既有安裝請開上方網址並依頁內新版提示更新。iPhone以Safari分享→加入主畫面。
 - 首次連網載入後支援離線重開。已完成局面與回饋留在本機、可匯出JSON；未完成局不恢復。
 - 原創神話奇幻，無遠端分析、帳號或付費服務。瀏覽器流程可驗證，是否有趣及先後手平衡需真人試玩。
@@ -64,6 +66,9 @@ npx playwright test --config=playwright.fire-webkit.config.ts
 # 共享神域手機瀏覽器
 npx playwright test e2e/realm.spec.ts
 npx playwright test --config=playwright.realm-webkit.config.ts
+# 爭域制與總分制對照
+npx playwright test e2e/domains.spec.ts
+npx playwright test --config=playwright.domains-webkit.config.ts
 ```
 
 瀏覽器測試使用本機 Google Chrome。沒有 Chrome 時需先安裝或將

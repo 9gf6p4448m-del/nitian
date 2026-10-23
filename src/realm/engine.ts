@@ -1,6 +1,7 @@
 export type Player = 'asura' | 'deva'
 export type Axis = 'h' | 'v'
 export type Rank = 1 | 2
+export type VictoryRule = 'power' | 'domains'
 export type Cell =
   | { kind: 'shrine'; owner: Player; rank: Rank }
   | { kind: 'power'; strength: number; axis: Axis }
@@ -12,6 +13,8 @@ export type RealmAction =
   | { type: 'reverse'; sacrifice: number; power: number }
 export interface RealmState {
   mode: 'full' | 'trial'
+  /** Missing in legacy states, which retain the original power rule. */
+  victory?: VictoryRule
   board: Cell[]
   turn: Player
   first: Player
@@ -41,9 +44,10 @@ export function coord(index: number): string {
   return `${'ABCD'[index % 4]}${Math.floor(index / 4) + 1}`
 }
 
-export function createRealm(mode: 'full' | 'trial', first: Player = 'asura'): RealmState {
+export function createRealm(mode: 'full' | 'trial', first: Player = 'asura', victory: VictoryRule = 'power'): RealmState {
   if (mode !== 'full' && mode !== 'trial') throw new Error('未知神域模式')
   if (first !== 'asura' && first !== 'deva') throw new Error('未知先手')
+  if (victory !== 'power' && victory !== 'domains') throw new Error('未知勝利規則')
   const board: Cell[] = Array(16).fill(null)
   const shrine = (at: number, owner: Player, rank: Rank) => { board[at] = { kind: 'shrine', owner, rank } }
   const power = (at: number, strength: number, axis: Axis) => { board[at] = { kind: 'power', strength, axis } }
@@ -60,7 +64,7 @@ export function createRealm(mode: 'full' | 'trial', first: Player = 'asura'): Re
     : { small: 1, big: 1, powers: [3] }
   const steps = mode === 'full' ? 6 : 2
   return {
-    mode, board, turn: first, first, remaining: { asura: steps, deva: steps },
+    mode, victory, board, turn: first, first, remaining: { asura: steps, deva: steps },
     inventory: { asura: inventory(), deva: inventory() }, ply: 0,
     status: 'playing', winner: null,
   }
@@ -90,6 +94,52 @@ export function score(state: RealmState): Record<Player, number> {
     }
   })
   return totals
+}
+
+/** Four 2×2 domains, ordered northwest, northeast, southwest, southeast. */
+export function domainAt(index: number): number {
+  if (!inBounds(index)) throw new Error('棋格超出神域')
+  return Math.floor(index / 8) * 2 + Math.floor((index % 4) / 2)
+}
+
+export interface Domain {
+  id: number
+  name: string
+  scores: Record<Player, number>
+  controller: Player | null
+}
+
+/** Supply belongs to the receiving shrine's domain, even across a boundary. */
+export function domains(state: RealmState): Domain[] {
+  const result: Domain[] = ['西北', '東北', '西南', '東南'].map((name, id) => ({
+    id, name, scores: { asura: 0, deva: 0 }, controller: null,
+  }))
+  state.board.forEach((cell, at) => {
+    if (cell?.kind !== 'shrine') return
+    for (const supply of supplyBreakdown(state, at)) result[domainAt(at)].scores[cell.owner] += supply.value
+  })
+  for (const domain of result) {
+    const { asura, deva } = domain.scores
+    domain.controller = asura === deva ? null : asura > deva ? 'asura' : 'deva'
+  }
+  return result
+}
+
+export function domainCount(state: RealmState): Record<Player, number> {
+  const count = { asura: 0, deva: 0 }
+  for (const domain of domains(state)) if (domain.controller) count[domain.controller]++
+  return count
+}
+
+/** Also usable on a preview: the same comparison decides the final result. */
+export function outcome(state: RealmState): { winner: Player | 'draw'; reason: 'domains' | 'power' | 'draw' } {
+  if (state.victory === 'domains') {
+    const count = domainCount(state)
+    if (count.asura !== count.deva) return { winner: count.asura > count.deva ? 'asura' : 'deva', reason: 'domains' }
+  }
+  const totals = score(state)
+  if (totals.asura === totals.deva) return { winner: 'draw', reason: 'draw' }
+  return { winner: totals.asura > totals.deva ? 'asura' : 'deva', reason: 'power' }
 }
 
 function isLegal(state: RealmState, action: RealmAction): boolean {
@@ -160,8 +210,7 @@ export function applyAction(state: RealmState, action: RealmAction): RealmState 
   next.remaining[state.turn]--
   if (next.remaining.asura === 0 && next.remaining.deva === 0) {
     next.status = 'finished'
-    const totals = score(next)
-    next.winner = totals.asura === totals.deva ? 'draw' : totals.asura > totals.deva ? 'asura' : 'deva'
+    next.winner = outcome(next).winner
   } else {
     const other = opponent(state.turn)
     next.turn = next.remaining[other] > 0 ? other : state.turn

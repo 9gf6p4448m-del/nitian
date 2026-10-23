@@ -10,7 +10,7 @@ async function state(page: Page): Promise<RealmState> {
 }
 
 async function open(page: Page) {
-  await page.goto('./?mode=realm')
+  await page.goto('./?mode=realm&victory=power')
   const tutorial = page.getByRole('dialog', { name: '神域怎麼玩' })
   await expect(tutorial).toBeVisible()
   await tutorial.getByRole('button', { name: '開始試玩', exact: true }).click()
@@ -20,6 +20,7 @@ async function open(page: Page) {
 async function newGame(page: Page, mode: 'full' | 'trial' = 'full', opponent = 'local', humanSide: Player = 'asura', first: Player = 'asura') {
   await button(page, '新局').click()
   const dialog = page.getByRole('dialog', { name: '開始新局' })
+  await dialog.getByLabel('勝利規則', { exact: true }).selectOption('power')
   await dialog.getByLabel('試玩局面', { exact: true }).selectOption(mode)
   await dialog.getByLabel('對手', { exact: true }).selectOption(opponent)
   await dialog.getByLabel('我的陣營', { exact: true }).selectOption(humanSide)

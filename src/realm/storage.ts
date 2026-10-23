@@ -1,10 +1,11 @@
-import type { RealmAction, RealmState, Player } from './engine'
+import type { RealmAction, RealmState, Player, VictoryRule } from './engine'
 
-export interface RealmSettings { mode: 'full' | 'trial'; opponent: 'ai' | 'local'; humanSide: Player; first: Player }
+export interface RealmSettings { mode: 'full' | 'trial'; opponent: 'ai' | 'local'; humanSide: Player; first: Player; victory?: VictoryRule }
 export interface RealmTurn { side: Player; action: RealmAction; before: RealmState; after: RealmState; decisionMs: number }
-export interface RealmRecord { schema: 'nitian.realm.v1'; id: string; startedAt: string; completedAt: string | null; settings: RealmSettings; turns: RealmTurn[]; outcome: { winner: Player | 'draw'; scores: Record<Player, number> } | null; feedback: string }
+export interface RealmRecord { schema: 'nitian.realm.v1'; id: string; startedAt: string; completedAt: string | null; settings: RealmSettings; turns: RealmTurn[]; outcome: { winner: Player | 'draw'; scores: Record<Player, number>; rule?: VictoryRule; reason?: 'domains' | 'power' | 'draw'; domains?: Record<Player, number> } | null; feedback: string }
 export interface Store { getItem(key: string): string | null; setItem(key: string, value: string): void }
 export const defaults: RealmSettings = { mode: 'full', opponent: 'ai', humanSide: 'asura', first: 'asura' }
+export const recordVictory = (record: RealmRecord): VictoryRule => record.settings?.victory ?? record.outcome?.rule ?? 'power'
 const key = 'nitian.realm.history.v1'
 export function readHistory(store?: Store): { records: RealmRecord[]; error: boolean } {
   try {
