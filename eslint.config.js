@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 // Scope this added check to the new mode and its shared PWA hook; legacy modes
 // retain their existing regression suites rather than receiving unrelated edits.
 export default [{
-  files: ['src/FireApp.tsx', 'src/fire/**/*.tsx', 'src/pwa.ts'],
+  files: ['src/FireApp.tsx', 'src/RealmApp.tsx', 'src/fire/**/*.tsx', 'src/pwa.ts'],
   languageOptions: {
     parser: tsParser,
     ecmaVersion: 'latest',

@@ -279,7 +279,9 @@ test.describe('奪火手機原型', () => {
     await page.reload()
     await page.waitForFunction(() => !!navigator.serviceWorker.controller)
     const manifest = await page.evaluate(async () => (await fetch('manifest.webmanifest')).json())
-    expect(manifest.start_url).toBe('./?mode=fire')
+    // PWA now launches the authorized realm prototype; this case still verifies
+    // that explicitly opened fire games remain playable after offline reload.
+    expect(manifest.start_url).toBe('./?mode=realm')
     await context.setOffline(true)
     await page.reload()
     await expect(page.getByTestId('fire-app')).toBeVisible()

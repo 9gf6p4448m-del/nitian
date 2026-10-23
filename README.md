@@ -1,10 +1,24 @@
-# 逆天 NITIAN · 奪火破壇 0.2
+# 逆天 NITIAN · 共享神域 0.3
+
+新版手機試玩：**https://9gf6p4448m-del.github.io/nitian/?mode=realm**
+
+4×4共用神域，雙方輪流建立神壇、引入橫/縱神力，或犧牲己方壇轉向一股神力。
+完整局雙方各六步，最後當前神力較高者勝。普通壇一倍、大壇兩倍，多股供應相加；不是逐回合累積分數。
+先選行動、點棋盤，看預覽後確認。「查看供應」能查看每股來源；「新局」可切四手試局、同機雙人、陣營及先手。
+
+- [規則](REALM_SPEC.md)／[驗收](REALM_ACCEPTANCE.md)／[驗證與送達](REALM_QA.md)。
+- 新PWA預設從共享神域啟動；既有安裝請開上方網址並依頁內新版提示更新。iPhone以Safari分享→加入主畫面。
+- 首次連網載入後支援離線重開。已完成局面與回饋留在本機、可匯出JSON；未完成局不恢復。
+- 原創神話奇幻，無遠端分析、帳號或付費服務。瀏覽器流程可驗證，是否有趣及先後手平衡需真人試玩。
+- 舊版皆保留，根網址仍是輪流插牌模式；請用明確mode連結進入新版。
+
+## 奪火破壇 0.2（舊版）
 
 五乘五戰場，雙方各兩名角色。爭奪同一團神火，以移動、推擊、投火與接應突破祭壇。
 支援手機點選、人機對局及同機雙人；A送回己方祭壇，B送入對方祭壇。雙方使用相同規則。
 
 - **奪火手機試玩**：https://9gf6p4448m-del.github.io/nitian/?mode=fire
-- 新PWA安裝後預設啟動奪火；既有安裝可開上述網址，再依頁內更新提示載入最新版本。
+- 舊奪火仍可直接開啟並離線重載；新PWA啟動入口已改為共享神域。
 - 奪火驗收：[FIRE_ACCEPTANCE.md](FIRE_ACCEPTANCE.md)；規則與限制：[FIRE_SPEC.md](FIRE_SPEC.md)；實測：[FIRE_QA.md](FIRE_QA.md)。
 - 奪火畫面：[手機](docs/screenshots/fire-mobile.png)／[桌面](docs/screenshots/fire-desktop.png)。
 - 遊戲只存本機設定、紀錄與回饋，可匯出JSON；沒有遠端分析、帳號或付費內容。
@@ -40,12 +54,16 @@ AI為有限兩層搜尋及評分，沒有全局最優保證。原型可運作與
 npm run dev
 # 開啟終端列出的 http://127.0.0.1:5173/nitian/
 npm run lint:fire
+npm run lint:realm
 npm test
 npm run test:coverage
 npm run build
 npm run test:e2e
 # 奪火的 iPhone WebKit 模擬（需相容的 Playwright WebKit）
 npx playwright test --config=playwright.fire-webkit.config.ts
+# 共享神域手機瀏覽器
+npx playwright test e2e/realm.spec.ts
+npx playwright test --config=playwright.realm-webkit.config.ts
 ```
 
 瀏覽器測試使用本機 Google Chrome。沒有 Chrome 時需先安裝或將

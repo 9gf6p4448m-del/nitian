@@ -1,10 +1,10 @@
 {
   "id": "./",
-  "name": "逆天｜奪火破壇",
+  "name": "逆天｜共享神域",
   "short_name": "逆天",
-  "description": "阿修羅與天眾爭奪神火。移動、推擊、投火與接應，突破祭壇。",
+  "description": "共用須彌山神力，建立神壇，犧牲逆轉。阿修羅神話策略試玩。",
   "lang": "zh-Hant",
-  "start_url": "./?mode=fire",
+  "start_url": "./?mode=realm",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",

@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     include: ['src/**/*.test.ts'],
     coverage: {
-      provider: 'v8', include: ['src/game/**/*.ts', 'src/fire/**/*.ts', 'src/storage.ts', 'src/duel-storage.ts'],
+      provider: 'v8', include: ['src/game/**/*.ts', 'src/fire/**/*.ts', 'src/realm/**/*.ts', 'src/storage.ts', 'src/duel-storage.ts'],
       exclude: ['src/**/*.test.ts', 'src/game/types.ts'],
       thresholds: { lines: 80, branches: 80, functions: 80, statements: 80 },
     },
