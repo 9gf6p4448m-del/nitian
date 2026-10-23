@@ -10,11 +10,30 @@ const arrows = { N: '↑', E: '→', S: '↓', W: '←', NE: '↗', SE: '↘', S
 const liveRun = !!process.env.TEST_URL && !['127.0.0.1', 'localhost', '[::1]'].includes(new URL(process.env.TEST_URL).hostname)
 const shot = (page: Page, name: string) => `docs/screenshots/clash-${name}-${page.context().browser()!.browserType().name()}${liveRun ? '-live' : ''}.png`
 
+async function capture(page: Page, options: { path: string; fullPage?: boolean }) {
+  // React attaches CSS background images after navigation load. Remote image atlases
+  // may still be downloading when the first board is interactive; wait for pixels.
+  await app(page).evaluate(async element => {
+    const style = getComputedStyle(element)
+    await Promise.all(['--cl-units', '--cl-cards'].map(property => new Promise<void>((resolve, reject) => {
+      const url = style.getPropertyValue(property).trim().replace(/^url\(["']?/, '').replace(/["']?\)$/, '')
+      const image = new Image()
+      image.onload = () => resolve()
+      image.onerror = () => reject(new Error(`圖集無法載入：${url}`))
+      image.src = url
+    })))
+  })
+  await page.screenshot(options)
+}
+
 class ClashJourney {
   constructor(readonly page: Page, readonly touch = false) {}
   async press(locator: Locator) { await (this.touch ? locator.tap() : locator.click()) }
   async state(): Promise<GameState> { return JSON.parse((await app(this.page).getAttribute('data-state'))!) as GameState }
   async reveal() {
+    if ((await this.state()).status === 'playing') {
+      await expect(this.page.locator('.cl-hand button:not(:disabled), dialog[open][aria-label^="交給"]').first()).toBeVisible()
+    }
     const dialog = this.page.getByRole('dialog', { name: /^交給/ })
     if (await dialog.count()) {
       await expect(this.page.locator('.cl-hand button')).toHaveCount(0)
@@ -93,8 +112,8 @@ test.describe('phone touch', () => {
     expect(rect!.height).toBeGreaterThanOrEqual(44)
     const board = await page.locator('.cl-board').boundingBox()
     expect(board!.width).toBeGreaterThanOrEqual(340)
-    await page.screenshot({ path: shot(page, 'phone-initial-viewport') })
-    await page.screenshot({ path: shot(page, 'phone-initial'), fullPage: true })
+    await capture(page, { path: shot(page, 'phone-initial-viewport') })
+    await capture(page, { path: shot(page, 'phone-initial'), fullPage: true })
   })
 
   test('spear preview direction, cancel, reselect and duplicate confirm are atomic', async ({ page }) => {
@@ -105,8 +124,8 @@ test.describe('phone touch', () => {
     await journey.select(attack)
     await expect(page.getByLabel('這一手預覽', { exact: true })).toContainText('傷害 2＝基礎2')
     await expect(page.getByLabel('預覽攻擊路徑')).toBeVisible()
-    await page.screenshot({ path: shot(page, 'phone-attack-preview-viewport') })
-    await page.screenshot({ path: shot(page, 'phone-attack-preview'), fullPage: true })
+    await capture(page, { path: shot(page, 'phone-attack-preview-viewport') })
+    await capture(page, { path: shot(page, 'phone-attack-preview'), fullPage: true })
     await journey.press(button(page, '取消'))
     await expect(button(page, '確認這一手')).toBeDisabled()
     expect(await journey.state()).toEqual(before)
@@ -131,8 +150,8 @@ test.describe('phone touch', () => {
     expect(ended.history).toHaveLength(4)
     expect(ended.winner).toBe('xiu')
     await expect(page.locator('.cl-result h2')).toHaveText('阿修羅獲勝')
-    await page.screenshot({ path: shot(page, 'phone-finished-viewport') })
-    await page.screenshot({ path: shot(page, 'phone-finished'), fullPage: true })
+    await capture(page, { path: shot(page, 'phone-finished-viewport') })
+    await capture(page, { path: shot(page, 'phone-finished'), fullPage: true })
   })
 
   test('shift selects own unit, swaps without activating displaced unit, preserves HP', async ({ page }) => {
@@ -159,8 +178,8 @@ test('desktop 1366x768 board, hand and footer fit; invalid altar selection rejec
   const footer = await page.locator('.cl-footer').boundingBox()
   expect(board!.y + board!.height).toBeLessThan(footer!.y)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  await page.screenshot({ path: shot(page, 'desktop-initial-viewport') })
-  await page.screenshot({ path: shot(page, 'desktop-initial'), fullPage: true })
+  await capture(page, { path: shot(page, 'desktop-initial-viewport') })
+  await capture(page, { path: shot(page, 'desktop-initial'), fullPage: true })
 })
 
 test('320 width with selected card, directions and preview never overflows', async ({ page }) => {
@@ -171,7 +190,7 @@ test('320 width with selected card, directions and preview never overflows', asy
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   const direction = await button(page, '朝↓').boundingBox()
   expect(direction!.height).toBeGreaterThanOrEqual(44)
-  await page.screenshot({ path: shot(page, '320-preview'), fullPage: true })
+  await capture(page, { path: shot(page, '320-preview'), fullPage: true })
 })
 
 test('hotseat handoff hides cards and Escape, Tab and background clicks cannot bypass it', async ({ page }) => {
@@ -328,7 +347,23 @@ test('clash manifest has separate identity and legacy manifest content retains b
 test('production service worker installs and reloads playable clash while offline', async ({ page, context }) => {
   const journey = new ClashJourney(page)
   await journey.setup()
-  await expect.poll(() => page.evaluate(async () => !!(await navigator.serviceWorker.getRegistration())?.active)).toBe(true)
+  const workerState = await page.evaluate(async () => {
+    const worker = (await navigator.serviceWorker.ready).active
+    if (!worker) throw new Error('Service worker ready 後沒有 active worker')
+    await new Promise<void>((resolve, reject) => {
+      const changed = () => {
+        if (worker.state === 'activated' || worker.state === 'redundant') {
+          worker.removeEventListener('statechange', changed)
+          if (worker.state === 'activated') resolve()
+          else reject(new Error('Service worker 在啟用前成為 redundant'))
+        }
+      }
+      worker.addEventListener('statechange', changed)
+      changed()
+    })
+    return worker.state
+  })
+  expect(workerState).toBe('activated')
   await page.reload()
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true)
   await context.setOffline(true)
@@ -340,6 +375,6 @@ test('production service worker installs and reloads playable clash while offlin
     expect((await journey.state()).history).toHaveLength(1)
     const assets = await page.locator('.cl-unit').first().evaluate(el => getComputedStyle(el).backgroundImage)
     expect(assets).toContain('tactics-units.png')
-    await page.screenshot({ path: shot(page, 'offline'), fullPage: true })
+    await capture(page, { path: shot(page, 'offline'), fullPage: true })
   } finally { await context.setOffline(false) }
 })
