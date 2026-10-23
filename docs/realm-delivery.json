@@ -1,0 +1,29 @@
+{
+  "url": "https://9gf6p4448m-del.github.io/nitian/?mode=realm",
+  "sourceCommit": "ca0c9cf3fdd9125aa3b8ebbc5050030897cc4037",
+  "pagesCommit": "d325b10b72f4466a9e269c5a60e14ed723bf9e54",
+  "pagesStatus": "built",
+  "pagesUpdatedAt": "2026-10-23T13:05:58Z",
+  "liveVersion": {
+    "version": "nitian-s0-0b30f04a1e35",
+    "commit": "ca0c9cf3fdd9125aa3b8ebbc5050030897cc4037",
+    "builtAt": "2026-10-23T13:04:35.378Z"
+  },
+  "localVerification": {
+    "unitTests": 149,
+    "chromeRegressionTests": 64,
+    "webkitCoreTests": 5,
+    "lint": "passed",
+    "build": "passed",
+    "coveragePercent": { "statements": 98.25, "branches": 94.33, "functions": 99.50, "lines": 99.58 }
+  },
+  "publicVerification": {
+    "chromeCoreTests": 5,
+    "chromeOutput": "5 passed (29.9s)",
+    "webkitCoreTests": 5,
+    "webkitOutput": "5 passed (1.2m)",
+    "offlineReload": "passed in Chrome and WebKit",
+    "liveScreenshots": 12
+  },
+  "limits": ["No physical phone installation test", "No human fun or balance validation", "No unfinished match restoration"]
+}

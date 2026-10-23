@@ -16,7 +16,7 @@
 
 ## 實際結果
 
-第一輪Chrome發現介面呈現與焦點問題；修正後第二輪Chrome10項、WebKit核心5項全數通過。公開網址結果仍待補記，沒有以推測填入通過數或部署時間。
+第一輪Chrome發現介面呈現與焦點問題；修正後Chrome與WebKit通過，最終公開網址核心各5項通過。以下保留失敗原因與修正後實際輸出。
 
 | 指令／環境 | 實際輸出 | 狀態 |
 | --- | --- | --- |
@@ -28,8 +28,8 @@
 | `npx playwright test --config playwright.realm-webkit.config.ts --reporter=list` | `5 passed (1.1m)`，exit 0 | 本機WebKit核心通過 |
 | `npx playwright test --config playwright.realm-webkit.config.ts --reporter=list --output=test-results/realm-webkit-latest`，加嚴後併跑 | `1 failed, 4 passed (1.1m)`，exit 1 | 兩步／底部分數加嚴通過；AI同步觀測讀到ply6，測試錯誤要求必須先看見ply5，修正後待重跑 |
 | `npx playwright test --config playwright.realm-webkit.config.ts --reporter=list --output=test-results/realm-webkit-latest`，DOM觀測修正後串行 | `5 passed (1.3m)`，exit 0 | 最新WebKit核心及加嚴斷言通過，捕捉實際human中間態 |
-| 公開網址Chrome核心E2E | 尚未執行 | 未驗證 |
-| 公開網址WebKit核心E2E | 尚未執行 | 未驗證 |
+| `$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; npx playwright test e2e/realm.spec.ts --grep '@live' --reporter=list --output=test-results/realm-public-chrome` | `5 passed (29.9s)`，exit0 | 公開Chrome通過 |
+| `$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; npx playwright test --config playwright.realm-webkit.config.ts --reporter=list --output=test-results/realm-public-webkit` | `5 passed (1.2m)`，exit0 | 公開WebKit通過 |
 
 ## 整合驗證
 
@@ -44,7 +44,17 @@
 
 變更對應：src/realm/engine.ts及ai.ts為規則/AI；各.test.ts驗人工數值、非法/純度及AI；storage.ts及其測試為獨立本機紀錄；RealmApp.tsx/realm.css為手機界面、光流、教學、預覽/提交/紀錄；main.tsx增加獨立路由；manifest/index為新入口及標題；vite/eslint/package設定加入檢查範圍、版本與指令（不改門檻或引入依賴）；e2e與WebKit設定為實機制瀏覽器驗證；README/SPEC/本檔及截圖為交付。`git diff --check` exit0，無無關功能變更；回歸重拍的舊fire兩張截圖已還原，保留既有證據。
 
-Pages送達與公開網址核心測試仍待下方補記，尚不宣稱公開已更新。
+## 公開送達
+
+- 手機試玩：https://9gf6p4448m-del.github.io/nitian/?mode=realm
+- `git push origin HEAD:main`：d837263..ca0c9cf。來源提交`ca0c9cf3fdd9125aa3b8ebbc5050030897cc4037`，2026-10-23 21:04:26+08:00。
+- `npm run deploy:pages`：`Published`。`git log origin/gh-pages -1`：`d325b10b72f4466a9e269c5a60e14ed723bf9e54`，2026-10-23 21:05:03+08:00。
+- `gh api repos/9gf6p4448m-del/nitian/pages/builds/latest`：status=`built`、commit=`d325b10...`、updated_at=`2026-10-23T13:05:58Z`（台灣21:05:58）。
+- 公開`version.json`已實際讀取：version=`nitian-s0-0b30f04a1e35`、commit=`ca0c9cf3fdd9125aa3b8ebbc5050030897cc4037`、builtAt=`2026-10-23T13:04:35.378Z`；與發布dist吻合。cache命名前綴沿用既有PWA產生器，遊戲介面版本是0.3。
+- 公開Chrome/WebKit各5項通過，涵蓋touch、預覽/取消/雙擊、人工四例、完整12手平手/JSON、AI完整/後手、真實human中間態及離線reload；不是只測首頁HTTP。
+- 此來源提交後僅補QA、交付JSON與公開截圖，runtime程式及dist未變，不因文件提交而誤稱線上來源是文件提交。
+- 既有PWA若仍見舊奪火，請直接開新版mode=realm連結；出現「有新版，立即更新」可更新，更新會重新開局。iPhone以Safari分享→加入主畫面；實體手機安裝尚未驗證。
+- 機器可讀證據：[realm-delivery.json](docs/realm-delivery.json)。
 
 ## 截圖
 
@@ -54,11 +64,11 @@ Pages送達與公開網址核心測試仍待下方補記，尚不宣稱公開已
 
 WebKit另檢視 `realm-mobile-viewport-webkit.png`、`realm-supply-webkit.png`、`realm-draw-result-webkit.png`：光線、得分、殘骸與平手結果可辨識，控制項無截字，實際touch操作通過。WebKit的截圖使用裝置像素比例3，圖檔像素寬度高於CSS的390px。
 
-本機截圖共16張：`realm-mobile*`、`realm-supply*`、`realm-draw-result*`分別保留Chrome與WebKit完整頁／viewport；`realm-narrow-preview*`及`realm-desktop-preview*`保留Chrome完整頁／viewport。公開網址截圖另加`-live`後綴，避免覆蓋本機證據。公開網址仍待部署驗證。
+本機截圖共16張：`realm-mobile*`、`realm-supply*`、`realm-draw-result*`分別保留Chrome與WebKit完整頁／viewport；`realm-narrow-preview*`及`realm-desktop-preview*`保留Chrome完整頁／viewport。公開網址另有12張`-live`圖（mobile/supply/draw-result，Chrome/WebKit各完整頁及viewport），未覆蓋本機證據。已實際檢視公開手機、供應與平手畫面；公開頁腳0.3、建置21:04:34。供應圖出現正常更新提示，後續AI及離線流程仍通過。
 
 ## 加嚴紀錄
 
-2026-10-23：既有`@live`試局案例增加玩法對話框必須寫「雙方各兩步」、不能寫「六步」，及犧牲A2轉B2預覽時底部須列「修5→8／天6→0」；同時確認未落子仍是5：6，取消後狀態不變。未刪案例、未改原本人工期望分數。這組新增斷言已在本機WebKit實跑通過，公開網址核心測試仍待部署。
+2026-10-23：既有`@live`試局案例增加玩法對話框必須寫「雙方各兩步」、不能寫「六步」，及犧牲A2轉B2預覽時底部須列「修5→8／天6→0」；同時確認未落子仍是5：6，取消後狀態不變。未刪案例、未改原本人工期望分數。這組新增斷言已在本機WebKit與公開Chrome/WebKit實跑通過。
 
 同日修正AI測試的量測方式：慢速瀏覽器從click返回時，AI可能已回應，原本僅在click返回後讀取state會錯過已發生的人類中間態。AI旅程改在確認前以MutationObserver保存棋盤實際DOM的data-state序列，仍必須捕捉到精確applyAction(before, humanAction)的完整ply+1狀態，並確認其後至多一次合法AI回應；沒有以直接接受ply+2取代中間態。Observer限該action窗口並以finally清理。同機局、重複確認仍維持精確一步，不變更規則、預期結果或回合上限。
 
