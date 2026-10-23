@@ -1,4 +1,22 @@
-# 逆天 NITIAN · 輪流插牌 S0.2
+# 逆天 NITIAN · 奪火破壇 0.2
+
+五乘五戰場，雙方各兩名角色。爭奪同一團神火，以移動、推擊、投火與接應突破祭壇。
+支援手機點選、人機對局及同機雙人；A送回己方祭壇，B送入對方祭壇。雙方使用相同規則。
+
+- **奪火手機試玩**：https://9gf6p4448m-del.github.io/nitian/?mode=fire
+- 新PWA安裝後預設啟動奪火；既有安裝可開上述網址，再依頁內更新提示載入最新版本。
+- 奪火驗收：[FIRE_ACCEPTANCE.md](FIRE_ACCEPTANCE.md)；規則與限制：[FIRE_SPEC.md](FIRE_SPEC.md)；實測：[FIRE_QA.md](FIRE_QA.md)。
+- 奪火畫面：[手機](docs/screenshots/fire-mobile.png)／[桌面](docs/screenshots/fire-desktop.png)。
+- 遊戲只存本機設定、紀錄與回饋，可匯出JSON；沒有遠端分析、帳號或付費內容。
+
+開啟奪火即進入B版人機對局。點未動角色→選動作→點目標格→看本步預覽→按確認。
+一個角色每輪只能做一件事，不能移動後順便攻擊。投火會傷到友軍，存活才接火；接火不消耗接手者啟用。
+走到祭壇不會自動贏，持火且還能行動時另按「奉獻」。上方「新局」可換A/B、同機雙人、玩家先後手。
+
+規則核心與AI分離於`src/fire/engine.ts`、`ai.ts`，人與AI共用`legalActions`及`applyAction`。
+AI為有限兩層搜尋及評分，沒有全局最優保證。原型可運作與自動對局能終局，不能證明真人覺得好玩。
+
+## 舊版輪流插牌 S0.2
 
 雙方輪流把一張牌插進共同軌道，落牌鎖定，最後沿軌道共同結算。
 
@@ -21,10 +39,13 @@
 ```sh
 npm run dev
 # 開啟終端列出的 http://127.0.0.1:5173/nitian/
+npm run lint:fire
 npm test
 npm run test:coverage
 npm run build
 npm run test:e2e
+# 奪火的 iPhone WebKit 模擬（需相容的 Playwright WebKit）
+npx playwright test --config=playwright.fire-webkit.config.ts
 ```
 
 瀏覽器測試使用本機 Google Chrome。沒有 Chrome 時需先安裝或將

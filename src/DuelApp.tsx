@@ -227,6 +227,7 @@ export default function DuelApp() {
           <div className="start-options"><label className="seed-label">交手種子<input aria-label="交手種子" value={preferences.seed} maxLength={80} onChange={event => updatePreferences({ seed: event.target.value })} spellCheck={false}/></label><label className="seed-label">首回合先手<select aria-label="首回合先手" value={preferences.firstSide} onChange={event => updatePreferences({ firstSide: event.target.value as Side })}><option value="player">我方先手</option><option value="enemy">雷衛先手</option></select></label><button className="primary begin" onClick={() => start()}>開始交手 <span aria-hidden="true">→</span></button></div>
           <p className="quiet">雙方手牌公開 · 每回合交換先手 · 相同種子可對照</p>
           <div className="lesson-invitation"><div><strong>第一次交手？先看三招怎麼結算。</strong><p>落牌還沒發動。倒刺先執行，之後挨打才會在同回合反擊。</p></div><button onClick={() => setModal('lesson')}>先學倒刺與順序</button></div>
+          <a className="legacy-link" href="?mode=fire">試玩新版奪火棋盤 →</a>
           <a className="legacy-link" href="?legacy=1">進入原版借招對照 →</a>
         </section>
       </> : <>

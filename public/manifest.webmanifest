@@ -1,10 +1,10 @@
 {
   "id": "./",
-  "name": "逆天｜借天之力，逆天而行",
+  "name": "逆天｜奪火破壇",
   "short_name": "逆天",
-  "description": "把招式插入天神的行動，借走雷霆，再親手奉還。單場卡牌試煉。",
+  "description": "阿修羅與天眾爭奪神火。移動、推擊、投火與接應，突破祭壇。",
   "lang": "zh-Hant",
-  "start_url": "./",
+  "start_url": "./?mode=fire",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
