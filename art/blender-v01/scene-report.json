@@ -1,0 +1,101 @@
+{
+  "blender_version": "4.5.10 LTS",
+  "collections": {
+    "01_ASURA_six_armed_original_sculpture": 184,
+    "02_LOTUS_lightning_altar": 57,
+    "03_STONE_floating_dais": 27,
+    "04_CAMERAS_and_lighting": 6,
+    "Collection": 0
+  },
+  "objects": 274,
+  "mesh_objects": 247,
+  "vertices": 40315,
+  "mesh_polygons": 40362,
+  "evaluated_vertices_including_curves": 49885,
+  "evaluated_polygons_including_curves": 49953,
+  "finite_geometry": true,
+  "bounds_min": [
+    -4.25,
+    -3.8499999046325684,
+    -0.38999998569488525
+  ],
+  "bounds_max": [
+    4.25,
+    4.650000095367432,
+    5.03000020980835
+  ],
+  "materials": [
+    "aged_dark_gold",
+    "amber_living_flame",
+    "cut_blue_grey_stone",
+    "deep_carved_recess",
+    "electric_indigo_crystal",
+    "indigo_woven_drapery",
+    "Material",
+    "polished_copper_edges",
+    "red_copper_terracotta",
+    "rough_charcoal_basalt",
+    "warm_eyes_and_fangs"
+  ],
+  "engine": "CYCLES",
+  "device": "GPU",
+  "device_discovery": [
+    {
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "type": "CUDA",
+      "enabled": false
+    },
+    {
+      "name": "AMD Ryzen 7 8845HS w/ Radeon 780M Graphics",
+      "type": "CPU",
+      "enabled": false
+    },
+    {
+      "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "type": "OPTIX",
+      "enabled": true
+    }
+  ],
+  "render_samples": 96,
+  "camera_subject_coverage": {
+    "beauty_camera": {
+      "min_xy": [
+        0.17817586660385132,
+        0.23655880987644196
+      ],
+      "max_xy": [
+        0.8198432326316833,
+        0.7726284265518188
+      ],
+      "all_bounds_in_frame": true
+    },
+    "game_angle_camera": {
+      "min_xy": [
+        0.17899514734745026,
+        0.2487318515777588
+      ],
+      "max_xy": [
+        0.8079703450202942,
+        0.7917107343673706
+      ],
+      "all_bounds_in_frame": true
+    }
+  },
+  "glb": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_bytes": 2669680,
+    "actual_bytes": 2669680
+  },
+  "outputs": [
+    "asura-altar.blend",
+    "asura-altar.glb",
+    "beauty.png",
+    "game-angle.png"
+  ],
+  "limits": [
+    "Procedural unrigged sculptural study, not a final commercial character",
+    "Material procedural noise is Blender-specific; GLB uses base PBR factors",
+    "No gameplay integration, animation, mobile performance or FPS claim"
+  ]
+}
