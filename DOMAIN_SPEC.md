@@ -60,4 +60,3 @@ npx playwright test --config playwright.domains-webkit.config.ts --reporter=list
 ```
 
 新測試與既有共享神域測試分檔，既有總分制案例明選 `power`。實際驗證結果、送達證據與截圖見 `DOMAIN_QA.md`。瀏覽器模擬手機及WebKit不等同於實體iPhone／Android。
-
