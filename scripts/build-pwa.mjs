@@ -22,7 +22,6 @@ const version = `nitian-s0-${hash.digest('hex').slice(0, 12)}`
 await writeFile('dist/version.json', JSON.stringify({ version, commit, builtAt: new Date().toISOString() }, null, 2))
 const precache = [...assets.map(f => base + f.slice(5)), base + 'version.json', base]
 const sw = `const CACHE = ${JSON.stringify(version)};
-self.__diag=[];
 const BASE = ${JSON.stringify(base)};
 const FILES = ${JSON.stringify(precache)};
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES))));
@@ -33,7 +32,6 @@ self.addEventListener('activate', event => event.waitUntil(Promise.all([
 ])));
 self.addEventListener('fetch', event => {
   const req = event.request, url = new URL(req.url);
-  self.__diag.push({url:req.url,mode:req.mode,headers:[...req.headers]});
   if (req.method !== 'GET' || url.origin !== self.location.origin || !url.pathname.startsWith(BASE)) return;
   if (req.mode === 'navigate') {
     event.respondWith(fetch(req).then(response => {
@@ -43,7 +41,9 @@ self.addEventListener('fetch', event => {
     return;
   }
   if (!FILES.includes(url.pathname)) return;
-  event.respondWith(caches.open(CACHE).then(async cache => {const cached=await cache.match(req); self.__diag.push({url:req.url,hit:!!cached,plain:!!await cache.match(req.url)}); return cached || fetch(req);}));
+  // These are allowlisted, same-origin static files. Use the canonical precache
+  // key so Vary: Origin cannot miss on module/CSS requests during offline reload.
+  event.respondWith(caches.open(CACHE).then(async cache => (await cache.match(url.pathname)) || fetch(req)));
 });
 `
 await writeFile('dist/sw.js', sw)

@@ -134,8 +134,6 @@ test('無法使用localStorage仍可開始及操作，並顯示保存失敗', as
 })
 
 test('PWA安裝資源及離線重新載入', async ({ page, context }) => {
-  page.on('pageerror', error => console.log('OFFLINE_PAGE_ERROR', error.message))
-  page.on('requestfailed', req => console.log('OFFLINE_REQUEST_FAILED', req.url(), req.failure()?.errorText))
   await page.goto('./')
   const manifest = await page.request.get('manifest.webmanifest')
   expect(manifest.ok()).toBe(true)
@@ -144,17 +142,8 @@ test('PWA安裝資源及離線重新載入', async ({ page, context }) => {
     await navigator.serviceWorker.ready
     if (!navigator.serviceWorker.controller) await new Promise<void>(resolve => navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true }))
   })
-  const sw = context.serviceWorkers()[0]
   await context.setOffline(true)
-  console.log('OFFLINE_CACHE', JSON.stringify(await page.evaluate(async () => {
-    return await Promise.all((await caches.keys()).map(async k => {
-      const c = await caches.open(k)
-      return { k, files: await Promise.all((await c.keys()).filter(r => r.url.endsWith('.js')).map(async req => ({ url: req.url, request: [...req.headers], headers: [...(await c.match(req))!.headers], empty: !!await c.match(new Request(req.url)), origin: !!await c.match(new Request(req.url, { headers: { Origin: location.origin } })) }))) }
-    }))
-  })))
   await page.reload()
-  console.log('OFFLINE_HTML', await page.content())
-  console.log('OFFLINE_SW', JSON.stringify(await sw.evaluate('self.__diag')))
   await expect(page.getByRole('button', { name: '開始借招', exact: true })).toBeVisible()
   await page.getByRole('button', { name: '開始借招', exact: true }).click()
   await expect(page.getByTestId('round')).toHaveText('1')
@@ -164,7 +153,8 @@ test('PWA安裝資源及離線重新載入', async ({ page, context }) => {
 test('演出期間品牌入口不繞過出手鎖定', async ({ page }) => {
   await start(page)
   await page.getByRole('button', { name: '出手', exact: true }).click()
-  await page.getByRole('link', { name: '逆天首頁' }).click()
+  // Exercise the handler during playback; do not wait for aria-disabled to clear.
+  await page.getByRole('link', { name: '逆天首頁' }).click({ force: true })
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await page.getByRole('button', { name: '略過演出' }).click()
   await expect(page.getByRole('button', { name: '下一回合', exact: true })).toBeVisible()
@@ -184,4 +174,39 @@ test('教學演出結束不覆蓋剛修改的音效設定', async ({ page }) => 
   await page.getByLabel('合成音效').check()
   await page.clock.runFor(350)
   await expect(page.getByLabel('合成音效')).toBeChecked()
+})
+
+test('觸控手機可選牌、插槽及撤回，出手列在視窗內', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
+  const page = await context.newPage()
+  try {
+    await page.goto(process.env.TEST_URL || 'http://127.0.0.1:4173/nitian/')
+    await page.getByRole('button', { name: '紙上試煉', exact: false }).tap()
+    await page.getByRole('button', { name: '開始借招', exact: true }).tap()
+    await page.getByRole('button', { name: '手牌 引雷印', exact: false }).tap()
+    await page.getByRole('button', { name: '插入區 1', exact: false }).tap()
+    await expect(page.getByTestId('planned-card')).toHaveCount(1)
+    await page.getByRole('button', { name: '撤回此牌' }).tap()
+    await expect(page.getByTestId('planned-card')).toHaveCount(0)
+    const dock = await page.getByRole('button', { name: '出手', exact: true }).boundingBox()
+    expect(dock!.y).toBeGreaterThanOrEqual(0)
+    expect(dock!.y + dock!.height).toBeLessThanOrEqual(844)
+  } finally { await context.close() }
+})
+
+test('鍵盤可選牌插槽、撤回，對話框Escape還原焦點', async ({ page }) => {
+  await start(page)
+  const card = page.getByRole('button', { name: '手牌 引雷印', exact: false })
+  await card.focus(); await page.keyboard.press('Enter')
+  const slot = page.getByRole('button', { name: '插入區 1', exact: false })
+  await slot.focus(); await page.keyboard.press('Enter')
+  await expect(page.getByTestId('planned-card')).toHaveCount(1)
+  await page.getByRole('button', { name: '撤回此牌' }).focus(); await page.keyboard.press('Enter')
+  await expect(page.getByTestId('planned-card')).toHaveCount(0)
+  const settings = page.getByRole('button', { name: '設定', exact: true })
+  await settings.focus(); await page.keyboard.press('Enter')
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(settings).toBeFocused()
 })

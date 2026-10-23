@@ -100,12 +100,12 @@ export function resolveTurn(state: CombatState, planned: readonly PlannedCard[])
     event(actor, target, reflection ? 'reflect' : 'attack', label,
       canceled ? `攻擊 ${power}；避鋒取消傷害，不觸發倒刺。`
         : `${reflection ? '反傷' : '攻擊'} ${power}，護盾抵扣 ${blocked}，失去 ${hpLoss} 生命。`, hpLoss, () => {
+        if (reflection) s[actor].thorns = false
         if (canceled) f.evade = false
         else { f.shield -= blocked; f.hp -= hpLoss }
       })
     if (checkDeath()) return
     if (!reflection && actor === 'enemy' && !canceled && f.thorns) {
-      f.thorns = false
       damage('player', 6, '倒刺反擊', true)
     }
   }

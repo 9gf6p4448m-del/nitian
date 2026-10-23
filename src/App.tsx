@@ -37,6 +37,8 @@ function download(record: RunRecord | RunRecord[]) {
 export default function App() {
   const [initial] = useState(() => ({ settings: loadSettings(), records: loadRecords() }))
   const [settings, setSettings] = useState(initial.settings.value)
+  const settingsRef = useRef(settings)
+  const settledRounds = useRef(new Set<number>())
   const [records, setRecords] = useState(initial.records.value)
   const [storageProblem, setStorageProblem] = useState(!initial.settings.ok || !initial.records.ok)
   const [view, setView] = useState<'ready' | 'battle' | 'result'>('ready')
@@ -66,7 +68,9 @@ export default function App() {
   const intents = getIntents(game.round)
 
   function updateSettings(patch: Partial<Settings>) {
-    const next = { ...settings, ...patch }; setSettings(next)
+    // Timers merge only their patch into the latest preferences, never a captured copy.
+    const next = { ...settingsRef.current, ...patch }
+    settingsRef.current = next; setSettings(next)
     if (!saveSettings(next)) setStorageProblem(true)
   }
   function persist(next: RunRecord[]) {
@@ -80,6 +84,7 @@ export default function App() {
     setView('battle'); setPhase('planning'); setNotice(''); setModal(null); setFeedback('')
     setResultRecord(null); setGuideDismissed(false)
     lock.current = false; zeroWarned.current = false; turns.current = []; withdrawals.current = 0
+    settledRounds.current = new Set()
     startedAt.current = performance.now(); runId.current = crypto.randomUUID()
   }
   function insert(slot: number) {
@@ -100,6 +105,8 @@ export default function App() {
     const next = [...planned]; [next[from], next[to]] = [next[to], next[from]]; setPlanned(next)
   }
   function finish(result: Resolution, turn: TurnRecord) {
+    if (settledRounds.current.has(turn.round)) return
+    settledRounds.current.add(turn.round)
     turns.current = [...turns.current, turn]
     setGame(result.nextState); setLastEvents(result.events); setAnimation(null); setPlanned([]); setSelected(null)
     if (game.round === 1 && game.tutorial) updateSettings({ tutorial: false })
@@ -160,7 +167,7 @@ export default function App() {
   const selectedEvents = selectedPlan && preview ? preview.events.filter(e => e.mainIndex === sequence.indexOf(selectedPlan.instanceId) && e.effect !== 'discard') : []
 
   return <div className={`app ${reduced ? 'reduced-motion' : ''}`}>
-    <header className="site-header"><a href="#" className="brand" onClick={e => { e.preventDefault(); if (view !== 'ready') setModal('restart') }} aria-label="逆天首頁"><span className="brand-mark">逆</span><span>逆天<small>N I T I A N</small></span></a><div className="header-actions"><button onClick={() => setModal('rules')}>玩法</button><button onClick={() => setModal('history')}>試煉紀錄</button><button onClick={() => setModal('settings')}>設定</button></div></header>
+    <header className="site-header"><a href="#" className="brand" onClick={e => { e.preventDefault(); if (view !== 'ready' && phase !== 'playing') setModal('restart') }} aria-label="逆天首頁" aria-disabled={phase === 'playing'}><span className="brand-mark">逆</span><span>逆天<small>N I T I A N</small></span></a><div className="header-actions"><button onClick={() => setModal('rules')}>玩法</button><button onClick={() => setModal('history')}>試煉紀錄</button><button onClick={() => setModal('settings')}>設定</button></div></header>
     <main className={`shell ${view === 'ready' ? 'home-shell' : ''}`}>
       {storageProblem && <div className="banner" data-testid="storage-warning">本機保存無法使用或資料損壞；仍可遊玩，結束後請匯出紀錄。</div>}
       {offline && <div className="banner offline-banner">離線試煉 · 遊戲可繼續，本機紀錄仍保留</div>}
@@ -179,7 +186,11 @@ export default function App() {
         {view === 'battle' ? <>
           <div className="battle-heading"><div><span className="eyebrow">共 同 行 動 軌 道</span><h1>{phase === 'planning' ? '把招式，插進天命。' : phase === 'playing' ? '借勢，正在發生。' : '這一回合，已落定。'}</h1></div><span className="limit">已排 <b>{planned.length}</b> / 3 招</span></div>
           {game.round === 1 && game.tutorial && !guideDismissed && phase === 'planning' && <div className="guide"><Icon name="bolt"/><p><strong>先看三招，再選時機。</strong>選「引雷印」，點聚雷後的插入區。剩餘兩招由你安排。</p><button onClick={() => { setGuideDismissed(true); updateSettings({ tutorial: false }) }}>略過引導</button></div>}
-          <div className="forecast" aria-label="本回合預估"><div><span>我方生命</span><strong data-testid="preview-player">{game.player.hp} <i>→</i> {preview?.nextState.player.hp ?? game.player.hp}</strong></div><div><span>敵方生命</span><strong data-testid="preview-enemy">{game.enemy.hp} <i>→</i> {preview?.nextState.enemy.hp ?? game.enemy.hp}</strong></div><div><span>雷量結餘</span><strong>我 {preview?.nextState.player.thunder ?? game.player.thunder}<i> / </i>敵 {preview?.nextState.enemy.thunder ?? game.enemy.thunder}</strong></div></div>
+          <div className="forecast" aria-label="本回合預估">
+            <div><span>我方生命</span><strong data-testid="preview-player">{game.player.hp} <i>→</i> {preview?.nextState.player.hp ?? game.player.hp}</strong><small>盾 {preview?.nextState.player.shield ?? game.player.shield}</small></div>
+            <div><span>敵方生命</span><strong data-testid="preview-enemy">{game.enemy.hp} <i>→</i> {preview?.nextState.enemy.hp ?? game.enemy.hp}</strong><small>盾 {preview?.nextState.enemy.shield ?? game.enemy.shield}</small></div>
+            <div><span>雷量結餘</span><strong>我 {preview?.nextState.player.thunder ?? game.player.thunder}<i> / </i>敵 {preview?.nextState.enemy.thunder ?? game.enemy.thunder}</strong></div>
+          </div>
           <section className="track" aria-label="行動編排">{Array.from({ length: 4 }, (_, slot) => <div className="track-pair" key={slot}>
             <div className={`insertion ${selected ? 'insertion-ready' : ''}`}><span className="slot-order">{String(slot + 1).padStart(2, '0')}</span>{planned.filter(p => p.slot === slot).map(p => { const card = game.hand.find(c => c.instanceId === p.instanceId)!; const data = CARDS[card.cardId]; return <button key={p.instanceId} data-testid="planned-card" className={`planned-card ${selected === p.instanceId ? 'selected' : ''} ${frame?.mainIndex === sequence.indexOf(p.instanceId) ? 'executing' : ''}`} onClick={() => setSelected(p.instanceId)} disabled={!canPlan}><Icon name={data.icon}/><span>{data.name}</span></button> })}<button className="insert-button" aria-label={`插入區 ${slot} ${SLOT_NAMES[slot]}`} onClick={() => insert(slot)} disabled={!canPlan}><span aria-hidden="true">＋</span><small>{SLOT_NAMES[slot]}</small></button></div>
             {slot < 3 && <div className={`enemy-action ${frame?.mainIndex === sequence.indexOf(`enemy-${slot}`) ? 'executing' : ''}`}><span className="enemy-order">天招 {slot + 1}</span><Icon name={intents[slot].kind === 'shield' ? 'shield' : intents[slot].kind === 'attack' ? 'blade' : 'bolt'}/><strong>{intents[slot].label}</strong><small>{intents[slot].description}</small></div>}
