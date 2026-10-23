@@ -9,6 +9,8 @@
 - 原始碼：https://github.com/9gf6p4448m-del/nitian
 - 範圍與驗收：[ACCEPTANCE.md](ACCEPTANCE.md)
 - 精確規格：[S0_SPEC.md](S0_SPEC.md)
+- 本次實跑與送達證據：[QA.md](QA.md)
+- 實際線上畫面：[手機](docs/screenshots/battle-mobile.png)／[桌面](docs/screenshots/battle-desktop.png)
 
 ## 啟動與驗證
 
@@ -28,6 +30,10 @@ npm run test:e2e
 `npm run preview -- --port 4173` 可預覽 production build，包含離線 PWA。
 開發模式不註冊 service worker。
 
+本機曾遇到OneDrive同步後把正常測試檔的目錄列舉型別報為連結，造成 `No tests found`。
+若發生，先比對 Node 的 Dirent 與 stat；在同步目錄外 clone／worktree 執行同一提交，
+保留全部案例與門檻。本次正式驗證位置是 `C:\Users\shung\work\nitian-verify`。
+
 規則／本機儲存核心設80%四項 coverage 門檻；React介面另以真實瀏覽器流程測試。
 E2E涵蓋勝敗、重開、編排、正常／略過演出、儲存故障、離線重載及兩種視窗尺寸。
 
@@ -38,6 +44,8 @@ E2E涵蓋勝敗、重開、編排、正常／略過演出、儲存故障、離�
 3. 點已編排的牌，在詳情列用「同區↑／↓」調序。
 4. 同時看生命、護盾、雙方雷量預估，再出手；演出可略過。
 5. 下一回合清除護盾、保留雷量，全部舊手牌已進棄牌堆。
+
+手機軌道可以獨立上下捲動；手牌與詳情在軌道下方，出手列固定於畫面底部。
 
 ## 三個優先試玩情境
 
