@@ -32,7 +32,16 @@
 
 ## 送達
 
-正式部署後補來源提交、Pages提交／時間、version.json、正式站全37項輸出與三張實際畫面；補入前尚未宣稱新版本已送達。
+- 程式來源：`f92fcfa78cfc2f49104793c805b8d246078bc428`（2026-10-23 15:22:28 +08:00）。後續提交只補QA送達證據與畫面，不改程式，因此main可比version.json多一筆文件提交。
+- `npm.cmd run deploy:pages` → `Published`、exit0。
+- `git log origin/gh-pages -1 --format='%H %cI %s'` → `d6107cc49a210801122acefe49c254ff19950677 2026-10-23T15:22:59+08:00 Updates`。
+- 本機dist與線上version.json一致：`nitian-s0-928758b262f0`、source `f92fcfa78cfc2f49104793c805b8d246078bc428`、builtAt `2026-10-23T07:22:43.846Z`。
+- `gh api repos/9gf6p4448m-del/nitian/pages/builds/latest` → `status: built`、commit `d6107cc49a210801122acefe49c254ff19950677`、updated_at `2026-10-23T07:27:00Z`（台灣15:27）、error null。GitHub Actions曾排隊，已等正式站source對齊後才跑線上測試。
+- 正式站命令：`$env:TEST_URL='https://9gf6p4448m-del.github.io/nitian/'; npm.cmd run test:e2e` → **37 passed (2.6m)**、exit0。含新教學、暫停／逐步、實際SUMERU反殺與重看、新舊對戰完整勝敗、手機與離線。
+- 教學圖已由正式站390×844測試重拍（頁尾07:22 UTC）；暫停與敗北圖為同程式碼production preview實拍（07:18 UTC）。不是實體手機安裝截圖。
+- PWA更新：連線開啟原網址，看到「新版本已備妥」按「更新並重開」。首頁應有「先學倒刺與順序」，上方有「教學」；頁尾2026-10-23 07:22 UTC（台灣15:22）。優先使用頁內更新，清網站資料會刪除本機紀錄。
+
+變更檔案與行號：`src/DuelApp.tsx:49`接播放與教學、`:185`起暫停timer；`src/ResolutionHelp.tsx:10`事件面板、`:27`教學、`:54`獨立重看、`:67`回合總結；`src/game/explanations.ts:46`解釋快照、`:68`逐牌因果、`:146`真引擎示範。`src/duel.css`修手機布局，README／DUEL_SPEC補操作。`git show --stat f92fcfa`：13 files changed、884 insertions、15 deletions。後續QA／一張正式站截圖更新不改程式。
 
 ## 仍未驗證
 
